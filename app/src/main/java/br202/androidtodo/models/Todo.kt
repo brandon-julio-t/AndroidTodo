@@ -1,3 +1,7 @@
 package br202.androidtodo.models
 
-data class Todo(val id: Int, val title: String, val description: String)
+data class Todo(
+    var id: String? = null,
+    var title: String? = null,
+    var description: String? = null
+)

@@ -2,28 +2,25 @@ package br202.androidtodo.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
-import br202.androidtodo.R
 import br202.androidtodo.databinding.ItemTodoBinding
+import br202.androidtodo.models.Todo
 import br202.androidtodo.repositories.TodoRepository
 
-class TodoAdapter() :
+class TodoAdapter(private val todos: List<Todo>, private val deleteCallback: () -> Unit) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
 
     class ViewHolder(view: ItemTodoBinding) : RecyclerView.ViewHolder(view.root) {
-        var id = 0
+        var id = ""
         val title: TextView = view.todoItemTitle
         val description: TextView = view.todoItemDescription
 
-        lateinit var notifyDataSetChanged: () -> Unit
+        lateinit var onDelete: () -> Unit
 
         init {
             view.todoDeleteBtn.setOnClickListener {
-                TodoRepository.delete(id)
-                notifyDataSetChanged()
+                TodoRepository.delete(id) { onDelete() }
             }
         }
     }
@@ -34,12 +31,12 @@ class TodoAdapter() :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val todo = TodoRepository.getAll()[position]
-        holder.id = todo.id
+        val todo = todos[position]
+        holder.id = todo.id.toString()
         holder.title.text = todo.title
         holder.description.text = todo.description
-        holder.notifyDataSetChanged = { notifyDataSetChanged() }
+        holder.onDelete = { deleteCallback() }
     }
 
-    override fun getItemCount() = TodoRepository.getAll().size
+    override fun getItemCount() = todos.size
 }

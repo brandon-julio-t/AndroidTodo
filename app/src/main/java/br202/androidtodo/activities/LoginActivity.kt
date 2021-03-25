@@ -1,4 +1,4 @@
-package br202.androidtodo
+package br202.androidtodo.activities
 
 import android.content.Intent
 import android.os.Bundle

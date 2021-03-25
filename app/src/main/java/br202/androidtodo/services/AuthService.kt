@@ -2,13 +2,10 @@ package br202.androidtodo.services
 
 import android.content.Context
 import android.widget.Toast
-import br202.androidtodo.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 object AuthService {
-    private var user: User? = null
-
     fun user(): FirebaseUser? {
         return FirebaseAuth.getInstance().currentUser
     }
