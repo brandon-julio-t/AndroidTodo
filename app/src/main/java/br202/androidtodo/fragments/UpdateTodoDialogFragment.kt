@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -29,22 +30,15 @@ class UpdateTodoDialogFragment : DialogFragment() {
             _binding = DialogTodoBinding.inflate(LayoutInflater.from(context))
         }
 
-        selectedTodo = viewModel.selectedTodo.value
-        val todoTitle = binding.dialogTodoTitle.text
-        val todoDescription = binding.dialogTodoDescription.text
-
-        listOf(todoTitle, todoDescription).forEach { it.clear() }
-
-        todoTitle.insert(0, selectedTodo?.title)
-        todoDescription.insert(0, selectedTodo?.description)
+        preFillInputs()
 
         return activity?.let {
             val builder = AlertDialog.Builder(it).apply {
                 setView(binding.root)
 
                 setPositiveButton(R.string.submit) { dialog, _ ->
-                    selectedTodo?.title = todoTitle.toString()
-                    selectedTodo?.description = todoDescription.toString()
+                    selectedTodo?.title = binding.dialogTodoTitle.text.toString()
+                    selectedTodo?.description = binding.dialogTodoDescription.text.toString()
 
                     Toast.makeText(it, "Todo Updated", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
@@ -55,6 +49,19 @@ class UpdateTodoDialogFragment : DialogFragment() {
 
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
+    }
+
+    private fun preFillInputs() {
+        selectedTodo = viewModel.selectedTodo.value
+
+        val title = binding.dialogTodoTitle.text
+        val description = binding.dialogTodoDescription.text
+
+        title.clear()
+        description.clear()
+
+        title.insert(0, selectedTodo?.title)
+        description.insert(0, selectedTodo?.description)
     }
 
     override fun onDismiss(dialog: DialogInterface) {

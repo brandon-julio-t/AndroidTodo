@@ -21,9 +21,7 @@ object AuthService {
             }
     }
 
-    fun logout() {
-        FirebaseAuth.getInstance().signOut()
-    }
+    fun logout() = FirebaseAuth.getInstance().signOut()
 
     fun register(ctx: Context, email: String, password: String, callback: () -> Unit) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)

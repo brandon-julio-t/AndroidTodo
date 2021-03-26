@@ -17,8 +17,6 @@ class HomeViewModel : ViewModel() {
                     .toList()
                     .filterNotNull()
                     .let { data -> _todos.value = data }
-
-                Log.wtf("hehe", _todos.value.toString())
             }
         }
     }
