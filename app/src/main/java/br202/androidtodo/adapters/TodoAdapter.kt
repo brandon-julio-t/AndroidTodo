@@ -9,7 +9,7 @@ import br202.androidtodo.viewModels.HomeViewModel
 
 class TodoAdapter(
     private val viewModel: HomeViewModel,
-    private val reduceEvent: (event: String) -> Unit
+    private val reduceEvent: (event: String) -> Unit,
 ) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
 
@@ -28,20 +28,25 @@ class TodoAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(view)
+        return ViewHolder(
+            ItemTodoBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         viewModel.todos.value?.get(position)?.let {
-            holder.id = it.id.toString()
+            holder.id = it.id
             holder.title.text = it.title
             holder.description.text = it.description
             holder.onUpdate = {
                 reduceEvent("update-todo")
                 viewModel.selectTodo(it)
             }
-            holder.onDelete = { viewModel.removeTodo(it) }
+            holder.onDelete = { viewModel.deleteTodo(it) }
         }
     }
 

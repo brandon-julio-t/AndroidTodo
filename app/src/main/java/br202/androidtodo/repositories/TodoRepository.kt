@@ -9,19 +9,19 @@ import com.google.firebase.firestore.QuerySnapshot
 object TodoRepository {
     private val db get() = FirebaseFirestore.getInstance().collection("todos")
 
-    fun getAll(callback: (it: Task<QuerySnapshot>) -> Unit) {
-        db.get().addOnCompleteListener { callback(it) }
+    fun getAll(callback: (it: QuerySnapshot) -> Unit) {
+        db.get().addOnSuccessListener { callback(it) }
     }
 
-    fun save(todo: Todo, callback: (it: Task<DocumentReference>) -> Unit) {
-        db.add(todo).addOnCompleteListener { callback(it) }
+    fun save(todo: Todo, callback: (it: DocumentReference) -> Unit) {
+        db.add(todo).addOnSuccessListener { callback(it) }
     }
 
-    fun update(todo: Todo, callback: (it: Task<Void>) -> Unit) {
-        db.document().set(todo) .addOnCompleteListener { callback(it) }
+    fun update(todo: Todo, callback: () -> Unit) {
+        db.document(todo.id).set(todo).addOnSuccessListener { callback() }
     }
 
-    fun delete(id: String, callback: (it: Task<Void>) -> Unit) {
-        db.document(id).delete().addOnCompleteListener { callback(it) }
+    fun delete(id: String, callback: () -> Unit) {
+        db.document(id).delete().addOnSuccessListener { callback() }
     }
 }

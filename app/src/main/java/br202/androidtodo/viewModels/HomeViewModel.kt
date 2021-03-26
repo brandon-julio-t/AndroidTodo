@@ -1,5 +1,6 @@
 package br202.androidtodo.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,14 +12,13 @@ class HomeViewModel : ViewModel() {
     private val _todos: MutableLiveData<List<Todo>> by lazy {
         MutableLiveData<List<Todo>>().also {
             TodoRepository.getAll {
-                it.result
-                    ?.map { e ->
-                        val todo = e.toObject<Todo>()
-                        todo.id = e.id
-                        return@map todo
-                    }
-                    ?.toList()
-                    ?.let { data -> _todos.value = data }
+                it.documents
+                    .map { e -> e.toObject<Todo>() }
+                    .toList()
+                    .filterNotNull()
+                    .let { data -> _todos.value = data }
+
+                Log.wtf("hehe", _todos.value.toString())
             }
         }
     }
@@ -29,10 +29,14 @@ class HomeViewModel : ViewModel() {
     val selectedTodo: LiveData<Todo> get() = _selectedTodo
 
     fun addTodo(todo: Todo) {
-        TodoRepository.save(todo) {
-            _todos.value?.toMutableList()?.let {
-                it.add(todo)
-                _todos.value = it
+        TodoRepository.save(todo) { saved ->
+            _todos.value?.toMutableList()?.let { list ->
+                saved.get().addOnSuccessListener { snapshot ->
+                    snapshot.toObject<Todo>()?.let {
+                        list.add(it)
+                        _todos.value = list
+                    }
+                }
             }
         }
     }
@@ -45,11 +49,9 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun removeTodo(todo: Todo) {
-        todo.id?.let { id ->
-            TodoRepository.delete(id) {
-                _todos.value = _todos.value?.filter { it.id != id }
-            }
+    fun deleteTodo(todo: Todo) {
+        TodoRepository.delete(todo.id) {
+            _todos.value = _todos.value?.filter { it.id != todo.id }
         }
     }
 
