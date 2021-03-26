@@ -6,48 +6,39 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br202.androidtodo.databinding.ActivityLoginBinding
 import br202.androidtodo.services.AuthService
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var mAuth: FirebaseAuth;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (AuthService.user() != null) {
-            goToHome()
-            return
-        }
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.loginButton.setOnClickListener {
-            val email = binding.loginEmail.text.toString()
-            val password = binding.loginPassword.text.toString()
+        binding.loginButton.setOnClickListener { onLogin() }
+        binding.loginToRegister.setOnClickListener { goToRegister() }
 
-            if (email.isEmpty()) {
-                Toast.makeText(this, "Email must not be empty.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        if (AuthService.user != null) {
+            goToHome()
+            return
+        }
+    }
 
-            if (password.isEmpty()) {
-                Toast.makeText(this, "Password must not be empty.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+    private fun onLogin() {
+        val email = binding.loginEmail.text.toString()
+        val password = binding.loginPassword.text.toString()
 
-            AuthService.login(this, email, password) { goToHome() }
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Email must not be empty.", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        binding.loginToRegister.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    RegisterActivity::class.java
-                )
-            )
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Password must not be empty.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        AuthService.login(this, email, password) { goToHome() }
     }
 
     private fun goToHome() {
@@ -59,5 +50,14 @@ class LoginActivity : AppCompatActivity() {
         )
 
         finish()
+    }
+
+    private fun goToRegister() {
+        startActivity(
+            Intent(
+                this,
+                RegisterActivity::class.java
+            )
+        )
     }
 }

@@ -17,6 +17,10 @@ object TodoRepository {
         db.add(todo).addOnCompleteListener { callback(it) }
     }
 
+    fun update(todo: Todo, callback: (it: Task<Void>) -> Unit) {
+        db.document().set(todo) .addOnCompleteListener { callback(it) }
+    }
+
     fun delete(id: String, callback: (it: Task<Void>) -> Unit) {
         db.document(id).delete().addOnCompleteListener { callback(it) }
     }

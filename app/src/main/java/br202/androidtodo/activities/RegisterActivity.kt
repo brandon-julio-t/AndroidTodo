@@ -15,24 +15,25 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.registerButton.setOnClickListener {
-            val email = binding.registerEmail.text.toString()
-            val password = binding.registerPassword.text.toString()
+        binding.registerButton.setOnClickListener { onRegister() }
+        binding.registerToLogin.setOnClickListener { goToLogin() }
+    }
 
-            if (email.isEmpty()) {
-                Toast.makeText(this, "Email must not be empty.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+    private fun onRegister() {
+        val email = binding.registerEmail.text.toString()
+        val password = binding.registerPassword.text.toString()
 
-            if (password.isEmpty()) {
-                Toast.makeText(this, "Password must not be empty.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            AuthService.register(this, email, password) { goToLogin() }
+        if (email.isEmpty()) {
+            Toast.makeText(this, "Email must not be empty.", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        binding.registerToLogin.setOnClickListener { goToLogin() }
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Password must not be empty.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        AuthService.register(this, email, password) { goToLogin() }
     }
 
     private fun goToLogin() {

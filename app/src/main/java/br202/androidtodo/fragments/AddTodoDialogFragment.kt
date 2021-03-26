@@ -7,15 +7,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import br202.androidtodo.R
 import br202.androidtodo.databinding.DialogTodoBinding
 import br202.androidtodo.models.Todo
-import br202.androidtodo.repositories.TodoRepository
-import com.google.firebase.firestore.FirebaseFirestore
+import br202.androidtodo.viewModels.HomeViewModel
 
-class TodoDialogFragment : DialogFragment() {
+class AddTodoDialogFragment : DialogFragment() {
+    private var createdTodo: Todo? = null;
     private var _binding: DialogTodoBinding? = null;
     private val binding get() = _binding!!
+    private val viewModel: HomeViewModel by activityViewModels()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -34,14 +36,10 @@ class TodoDialogFragment : DialogFragment() {
                 setPositiveButton(R.string.submit) { dialog, _ ->
                     val title = binding.dialogTodoTitle.text.toString()
                     val description = binding.dialogTodoDescription.text.toString()
-                    val todo = Todo(title = title, description = description)
+                    createdTodo = Todo(title = title, description = description)
 
-                    TodoRepository.save(todo) { resp ->
-                        val message = if (resp.isSuccessful) "Success" else resp.exception?.message
-                        Toast.makeText(it, message, Toast.LENGTH_SHORT).show()
-
-                        dialog.dismiss()
-                    }
+                    Toast.makeText(it, "Todo Created", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
                 }
 
                 setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
@@ -53,9 +51,6 @@ class TodoDialogFragment : DialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        val activity = requireActivity()
-        if (activity is DialogInterface.OnDismissListener) {
-            activity.onDismiss(dialog)
-        }
+        createdTodo?.let { viewModel.addTodo(it) }
     }
 }

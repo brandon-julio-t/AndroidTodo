@@ -6,9 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 object AuthService {
-    fun user(): FirebaseUser? {
-        return FirebaseAuth.getInstance().currentUser
-    }
+    val user: FirebaseUser? get() = FirebaseAuth.getInstance().currentUser
 
     fun login(ctx: Context, email: String, password: String, callback: () -> Unit) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)

@@ -1,44 +1,45 @@
 package br202.androidtodo.activities
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import br202.androidtodo.R
 import br202.androidtodo.adapters.TodoAdapter
 import br202.androidtodo.databinding.ActivityHomeBinding
-import br202.androidtodo.fragments.TodoDialogFragment
+import br202.androidtodo.fragments.AddTodoDialogFragment
+import br202.androidtodo.fragments.UpdateTodoDialogFragment
 import br202.androidtodo.models.Todo
-import br202.androidtodo.repositories.TodoRepository
 import br202.androidtodo.services.AuthService
-import com.google.firebase.firestore.ktx.toObject
+import br202.androidtodo.viewModels.HomeViewModel
 
-class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
-    private lateinit var binding: ActivityHomeBinding
+class HomeActivity : AppCompatActivity() {
     private val todos = mutableListOf<Todo>()
+    private val viewModel: HomeViewModel by viewModels()
+
+    private lateinit var binding: ActivityHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val user = AuthService.user()
-
+        val user = AuthService.user
         if (user == null) {
             goToLogin()
         }
 
         binding.homeGreeting.text = getString(R.string.greeting, user?.email)
+        binding.todoList.adapter = TodoAdapter(viewModel) { event -> reduceEvent(event) }
+        binding.addTodoButton.setOnClickListener { reduceEvent("add-todo") }
 
-        binding.todoList.adapter = TodoAdapter(todos) { fetchAllTodos() }
-
-        binding.addTodoButton.setOnClickListener {
-            TodoDialogFragment().show(supportFragmentManager, "todo-dialog")
-        }
-
-        fetchAllTodos()
+        viewModel.todos.observe(this, {
+            todos.clear()
+            todos.addAll(it)
+            binding.todoList.adapter?.notifyDataSetChanged()
+        })
     }
 
     private fun goToLogin() {
@@ -52,25 +53,14 @@ class HomeActivity : AppCompatActivity(), DialogInterface.OnDismissListener {
         finish()
     }
 
-    override fun onDismiss(dialog: DialogInterface?) {
-        fetchAllTodos()
-    }
+    private fun reduceEvent(event: String) = when (event) {
+        "add-todo" -> AddTodoDialogFragment()
+            .show(supportFragmentManager, "add-todo-dialog")
 
-    private fun fetchAllTodos() {
-        TodoRepository.getAll {
-            it.result
-                ?.map { e ->
-                    val todo = e.toObject<Todo>()
-                    todo.id = e.id
-                    return@map todo
-                }
-                ?.toList()
-                ?.let { data ->
-                    todos.clear()
-                    todos.addAll(data)
-                    binding.todoList.adapter?.notifyDataSetChanged()
-                }
-        }
+        "update-todo" -> UpdateTodoDialogFragment()
+            .show(supportFragmentManager, "update-todo-dialog")
+
+        else -> null
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

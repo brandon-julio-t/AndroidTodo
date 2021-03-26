@@ -5,10 +5,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import br202.androidtodo.databinding.ItemTodoBinding
-import br202.androidtodo.models.Todo
-import br202.androidtodo.repositories.TodoRepository
+import br202.androidtodo.viewModels.HomeViewModel
 
-class TodoAdapter(private val todos: List<Todo>, private val deleteCallback: () -> Unit) :
+class TodoAdapter(
+    private val viewModel: HomeViewModel,
+    private val reduceEvent: (event: String) -> Unit
+) :
     RecyclerView.Adapter<TodoAdapter.ViewHolder>() {
 
     class ViewHolder(view: ItemTodoBinding) : RecyclerView.ViewHolder(view.root) {
@@ -16,12 +18,12 @@ class TodoAdapter(private val todos: List<Todo>, private val deleteCallback: () 
         val title: TextView = view.todoItemTitle
         val description: TextView = view.todoItemDescription
 
+        lateinit var onUpdate: () -> Unit
         lateinit var onDelete: () -> Unit
 
         init {
-            view.todoDeleteBtn.setOnClickListener {
-                TodoRepository.delete(id) { onDelete() }
-            }
+            view.todoDeleteBtn.setOnClickListener { onDelete() }
+            view.todoUpdateBtn.setOnClickListener { onUpdate() }
         }
     }
 
@@ -31,12 +33,17 @@ class TodoAdapter(private val todos: List<Todo>, private val deleteCallback: () 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val todo = todos[position]
-        holder.id = todo.id.toString()
-        holder.title.text = todo.title
-        holder.description.text = todo.description
-        holder.onDelete = { deleteCallback() }
+        viewModel.todos.value?.get(position)?.let {
+            holder.id = it.id.toString()
+            holder.title.text = it.title
+            holder.description.text = it.description
+            holder.onUpdate = {
+                reduceEvent("update-todo")
+                viewModel.selectTodo(it)
+            }
+            holder.onDelete = { viewModel.removeTodo(it) }
+        }
     }
 
-    override fun getItemCount() = todos.size
+    override fun getItemCount() = viewModel.todos.value?.size ?: 0
 }
