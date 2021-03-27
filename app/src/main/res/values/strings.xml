@@ -12,4 +12,5 @@
     <string name="todo_description">Todo Description</string>
     <string name="delete">Delete</string>
     <string name="logout">Logout</string>
+    <string name="theme">Change to %1$s Mode</string>
 </resources>

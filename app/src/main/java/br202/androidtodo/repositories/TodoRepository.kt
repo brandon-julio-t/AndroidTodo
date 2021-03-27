@@ -2,6 +2,7 @@ package br202.androidtodo.repositories
 
 import br202.androidtodo.models.Todo
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
@@ -11,6 +12,10 @@ object TodoRepository {
 
     fun getAll(callback: (it: QuerySnapshot) -> Unit) {
         db.get().addOnSuccessListener { callback(it) }
+    }
+
+    fun getAllByUser(user: FirebaseUser, callback: (it: QuerySnapshot) -> Unit) {
+        db.whereEqualTo("user_id", user.uid).get().addOnSuccessListener { callback(it) }
     }
 
     fun save(todo: Todo, callback: (it: DocumentReference) -> Unit) {

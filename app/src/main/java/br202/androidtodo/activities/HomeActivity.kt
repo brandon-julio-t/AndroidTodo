@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import br202.androidtodo.R
 import br202.androidtodo.adapters.TodoAdapter
 import br202.androidtodo.databinding.ActivityHomeBinding
@@ -32,13 +33,18 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.homeGreeting.text = getString(R.string.greeting, user?.email)
-        binding.todoList.adapter = TodoAdapter(viewModel) { event -> reduceEvent(event) }
-        binding.addTodoButton.setOnClickListener { reduceEvent("add-todo") }
+        binding.homeTodoList.adapter = TodoAdapter(viewModel) { event -> reduceEvent(event) }
+        binding.homeAddTodoButton.setOnClickListener { reduceEvent("add-todo") }
 
         viewModel.todos.observe(this, {
             todos.clear()
             todos.addAll(it)
-            binding.todoList.adapter?.notifyDataSetChanged()
+            binding.homeTodoList.adapter?.notifyDataSetChanged()
+            binding.homeNoTodo.isVisible = todos.size <= 0
+        })
+
+        viewModel.isLoading.observe(this, {
+            binding.progressIndicator.isVisible = it
         })
     }
 

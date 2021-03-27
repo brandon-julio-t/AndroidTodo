@@ -1,28 +1,35 @@
 package br202.androidtodo.viewModels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br202.androidtodo.models.Todo
 import br202.androidtodo.repositories.TodoRepository
+import br202.androidtodo.services.AuthService
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
 class HomeViewModel : ViewModel() {
     private val _todos: MutableLiveData<List<Todo>> by lazy {
         MutableLiveData<List<Todo>>().also {
-            TodoRepository.getAll {
-                it.documents
-                    .map { e -> e.toObject<Todo>() }
-                    .toList()
-                    .filterNotNull()
-                    .let { data -> _todos.value = data }
+            AuthService.user?.let { user ->
+                TodoRepository.getAllByUser(user) {
+                    it.documents
+                        .map { e -> e.toObject<Todo>() }
+                        .toList()
+                        .filterNotNull()
+                        .let { data -> _todos.value = data }
+
+                    _isLoading.value = false
+                }
             }
         }
     }
 
     private val _selectedTodo = MutableLiveData<Todo>()
+    private val _isLoading = MutableLiveData(true)
 
+    val isLoading: LiveData<Boolean> get() = _isLoading
     val todos: LiveData<List<Todo>> get() = _todos
     val selectedTodo: LiveData<Todo> get() = _selectedTodo
 
