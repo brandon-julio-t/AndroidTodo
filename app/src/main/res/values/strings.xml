@@ -7,10 +7,12 @@
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
     <string name="greeting">Hello, %1$s</string>
-    <string name="addTodo">addTodo</string>
+    <string name="addTodo">Add Todo</string>
+    <string name="updateTodo">Update Todo</string>
     <string name="todo_title">Todo Title</string>
     <string name="todo_description">Todo Description</string>
     <string name="delete">Delete</string>
     <string name="logout">Logout</string>
     <string name="theme">Change to %1$s Mode</string>
+    <string name="no_todo">You don\'t have any todo</string>
 </resources>

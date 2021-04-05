@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_home"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="br202.androidtodo.views.home.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_to_todo_add"
+            app:destination="@id/todoAddFragment" />
+        <action
+            android:id="@+id/action_home_to_todo_update"
+            app:destination="@id/todoUpdateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoAddFragment"
+        android:name="br202.androidtodo.views.home.fragments.TodoAddFragment"
+        android:label="fragment_todo_add"
+        tools:layout="@layout/fragment_todo_add">
+        <action
+            android:id="@+id/action_todo_add_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoUpdateFragment"
+        android:name="br202.androidtodo.views.home.fragments.TodoUpdateFragment"
+        android:label="fragment_todo_update"
+        tools:layout="@layout/fragment_todo_update">
+        <action
+            android:id="@+id/action_todo_update_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+</navigation>
