@@ -1,13 +1,11 @@
 package br202.androidtodo.viewModels
 
-import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br202.androidtodo.models.Todo
 import br202.androidtodo.repositories.TodoRepository
 import br202.androidtodo.services.AuthService
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 
 class HomeViewModel : ViewModel() {
